@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Settings - PingBot{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Settings</h4>
+
+<div class="row g-4">
+    <!-- Telegram Linking -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-telegram"></i> Telegram Bot</h6>
+            </div>
+            <div class="card-body">
+                {% if current_user.bot_linked %}
+                <div class="alert alert-success d-flex align-items-center mb-3">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <div>
+                        Telegram linked as <strong>@{{ current_user.telegram_username or 'unknown' }}</strong>
+                        (Chat ID: {{ current_user.telegram_chat_id }})
+                    </div>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="action" value="unlink_telegram">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Unlink Telegram</button>
+                </form>
+                {% else %}
+                <div class="alert alert-info mb-3">
+                    <strong>How to link your Telegram:</strong>
+                    <ol class="mb-0 mt-2">
+                        <li>Click "Generate Code" below</li>
+                        <li>Open your PingBot in Telegram</li>
+                        <li>Send: <code>/start YOUR_CODE</code></li>
+                    </ol>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="action" value="generate_code">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-link-45deg"></i> Generate Linking Code
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Timezone -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-clock"></i> Timezone</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="action" value="update_timezone">
+                    <div class="mb-3">
+                        <label for="timezone" class="form-label">Your default timezone</label>
+                        <select name="timezone" id="timezone" class="form-select">
+                            {% for tz in timezones %}
+                            <option value="{{ tz }}" {{ 'selected' if current_user.timezone == tz }}>{{ tz }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Used as the default when creating new schedules.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Save Timezone</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Info -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-person"></i> Account</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="text-muted">Email:</span> {{ current_user.email }}
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted">Member since:</span> {{ current_user.created_at.strftime('%Y-%m-%d') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

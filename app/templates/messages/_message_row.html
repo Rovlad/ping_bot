@@ -1,0 +1,39 @@
+<tr id="msg-row-{{ msg.id }}">
+    <td>
+        <a href="{{ url_for('messages.detail', message_id=msg.id) }}" class="fw-medium text-decoration-none">
+            {{ msg.title }}
+        </a>
+    </td>
+    <td>
+        {% if msg.response_type == 'yes_no' %}
+        <span class="badge bg-info text-dark">Yes/No</span>
+        {% else %}
+        <span class="badge bg-secondary">Custom</span>
+        {% endif %}
+    </td>
+    <td>{{ msg.schedules.count() }}</td>
+    <td>
+        {% if msg.is_active %}
+        <span class="badge bg-success">Active</span>
+        {% else %}
+        <span class="badge bg-secondary">Inactive</span>
+        {% endif %}
+    </td>
+    <td class="text-muted">{{ msg.created_at.strftime('%Y-%m-%d') }}</td>
+    <td class="text-end">
+        <button class="btn btn-sm btn-outline-{{ 'warning' if msg.is_active else 'success' }}"
+                hx-post="{{ url_for('messages.toggle', message_id=msg.id) }}"
+                hx-target="#msg-row-{{ msg.id }}"
+                hx-swap="outerHTML">
+            {{ 'Pause' if msg.is_active else 'Activate' }}
+        </button>
+        <a href="{{ url_for('messages.edit', message_id=msg.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <button class="btn btn-sm btn-outline-danger"
+                hx-post="{{ url_for('messages.delete', message_id=msg.id) }}"
+                hx-target="#msg-row-{{ msg.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Delete this message? This will also delete all its schedules.">
+            Delete
+        </button>
+    </td>
+</tr>

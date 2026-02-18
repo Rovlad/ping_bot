@@ -1,0 +1,68 @@
+/* PingBot Custom Styles */
+
+/* Sidebar */
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 250px;
+    min-width: 250px;
+    transition: margin 0.25s ease-out;
+}
+
+#sidebar-wrapper .list-group-item {
+    border: none;
+    font-size: 0.95rem;
+}
+
+#sidebar-wrapper .list-group-item.active {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    font-weight: 500;
+}
+
+#sidebar-wrapper .list-group-item i {
+    width: 1.5rem;
+    display: inline-block;
+}
+
+#page-content-wrapper {
+    min-width: 0;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+/* Cards */
+.card {
+    border-radius: 0.5rem;
+}
+
+/* Table links */
+.table a {
+    color: inherit;
+}
+
+.table a:hover {
+    color: #0d6efd;
+}
+
+/* Badge outline */
+.badge.bg-outline-secondary {
+    background-color: transparent !important;
+    color: #6c757d;
+}
+
+/* Responsive sidebar */
+@media (max-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: -250px;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
+    }
+}
+
+/* Chart containers */
+canvas {
+    max-width: 100%;
+}
