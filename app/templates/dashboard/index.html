@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - PingBot{% endblock %}
+
+{% block content %}
+<h4 class="mb-4">Dashboard</h4>
+
+{% if not current_user.bot_linked %}
+<div class="alert alert-warning d-flex align-items-center" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+    <div>
+        Your Telegram bot is not linked. <a href="{{ url_for('settings.index') }}" class="alert-link">Go to Settings</a> to link it and start receiving messages.
+    </div>
+</div>
+{% endif %}
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small">Active Messages</div>
+                        <div class="fs-3 fw-bold">{{ active_messages }}</div>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-chat-dots text-primary fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small">Sent Today</div>
+                        <div class="fs-3 fw-bold">{{ sent_today }}</div>
+                    </div>
+                    <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-send text-success fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small">Response Rate (7d)</div>
+                        <div class="fs-3 fw-bold">{{ response_rate }}%</div>
+                    </div>
+                    <div class="bg-info bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-graph-up text-info fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small">Pending</div>
+                        <div class="fs-3 fw-bold">{{ pending }}</div>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-hourglass-split text-warning fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">Recent Activity</h6>
+        <a href="{{ url_for('messages.list_messages') }}" class="btn btn-sm btn-outline-primary">View All Messages</a>
+    </div>
+    <div class="card-body p-0"
+         hx-get="{{ url_for('dashboard.index') }}"
+         hx-trigger="every 30s"
+         hx-select="#recent-table"
+         hx-target="#recent-table"
+         hx-swap="outerHTML">
+        <div class="table-responsive" id="recent-table">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Message</th>
+                        <th>Sent At</th>
+                        <th>Response</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sm in recent %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('messages.detail', message_id=sm.message_id) }}">
+                                {{ sm.message.title }}
+                            </a>
+                        </td>
+                        <td class="text-muted">{{ sm.sent_at.strftime('%Y-%m-%d %H:%M') }} UTC</td>
+                        <td>{{ sm.response or '—' }}</td>
+                        <td>
+                            {% if sm.status == 'responded' %}
+                            <span class="badge bg-success">Responded</span>
+                            {% elif sm.status == 'sent' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif sm.status == 'failed' %}
+                            <span class="badge bg-danger">Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No messages sent yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

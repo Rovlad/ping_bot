@@ -1,0 +1,33 @@
+<tr id="sched-row-{{ sched.id }}">
+    <td>
+        <code class="small">{{ sched.cron_expression }}</code>
+        <div class="text-muted small">{{ cron_desc }}</div>
+    </td>
+    <td class="small">{{ sched.timezone }}</td>
+    <td class="small text-muted">
+        {{ sched.next_run_at.strftime('%Y-%m-%d %H:%M') if sched.next_run_at else '—' }} UTC
+    </td>
+    <td>
+        {% if sched.is_active %}
+        <span class="badge bg-success">Active</span>
+        {% else %}
+        <span class="badge bg-secondary">Paused</span>
+        {% endif %}
+    </td>
+    <td class="text-end">
+        <button class="btn btn-sm btn-outline-{{ 'warning' if sched.is_active else 'success' }}"
+                hx-post="{{ url_for('schedules.toggle', schedule_id=sched.id) }}"
+                hx-target="#sched-row-{{ sched.id }}"
+                hx-swap="outerHTML">
+            {{ 'Pause' if sched.is_active else 'Resume' }}
+        </button>
+        <a href="{{ url_for('schedules.edit', schedule_id=sched.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <button class="btn btn-sm btn-outline-danger"
+                hx-post="{{ url_for('schedules.delete', schedule_id=sched.id) }}"
+                hx-target="#sched-row-{{ sched.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Delete this schedule?">
+            Delete
+        </button>
+    </td>
+</tr>

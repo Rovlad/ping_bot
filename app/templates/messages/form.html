@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit' if editing else 'New' }} Message - PingBot{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a href="{{ url_for('messages.list_messages') }}" class="btn btn-sm btn-outline-secondary me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h4 class="mb-0">{{ 'Edit' if editing else 'New' }} Message</h4>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="e.g. Morning Check-in") }}
+                        {% for error in form.title.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.body.label(class="form-label") }}
+                        {{ form.body(class="form-control", rows=4, placeholder="The message text sent via Telegram. Supports Markdown.") }}
+                        {% for error in form.body.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.response_type.label(class="form-label") }}
+                        {{ form.response_type(class="form-select", id="response-type-select") }}
+                    </div>
+
+                    <div class="mb-3" id="custom-options-group" style="display: none;">
+                        {{ form.custom_options_raw.label(class="form-label") }}
+                        {{ form.custom_options_raw(class="form-control", placeholder="Good, OK, Bad") }}
+                        <div class="form-text">{{ form.custom_options_raw.description }}</div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('messages.list_messages') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const typeSelect = document.getElementById('response-type-select');
+    const customGroup = document.getElementById('custom-options-group');
+    function toggleCustom() {
+        customGroup.style.display = typeSelect.value === 'custom' ? 'block' : 'none';
+    }
+    typeSelect.addEventListener('change', toggleCustom);
+    toggleCustom();
+</script>
+{% endblock %}
